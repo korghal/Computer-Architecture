@@ -7,7 +7,13 @@ class CPU:
 
     def __init__(self):
         """Construct a new CPU."""
-        pass
+        self.ram = [0] * 256
+        self.reg = [0] * 8
+
+        # Instructions
+        self.LDI_code = 0b10000010
+        self.PRN_code = 0b01000111
+        self.HLT_code = 0b00000001
 
     def load(self):
         """Load a program into memory."""
@@ -18,12 +24,12 @@ class CPU:
 
         program = [
             # From print8.ls8
-            0b10000010, # LDI R0,8
+            0b10000010, # LDI R0,8      ## Load immediate: Register 0 = 8
             0b00000000,
             0b00001000,
-            0b01000111, # PRN R0
+            0b01000111, # PRN R0        ## Print Register 0's value
             0b00000000,
-            0b00000001, # HLT
+            0b00000001, # HLT           ## Halt the program
         ]
 
         for instruction in program:
@@ -59,7 +65,16 @@ class CPU:
             print(" %02X" % self.reg[i], end='')
 
         print()
+    
+    def LDI(self, register, value):
+        self.reg[register] = value
 
     def run(self):
         """Run the CPU."""
-        pass
+        instruction = self.ram[0] # Get the first instruction loaded in from the program.
+        while instruction is not self.HLT_code: # While the instruction is not equal to HLT : 1
+            if instruction == self.LDI_code:
+                self.LDI()
+            elif instruction == self.PRN_code:
+                pass
+
