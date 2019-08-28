@@ -9,7 +9,7 @@ class CPU:
         """Construct a new CPU."""
         self.ram = [0] * 256
         self.reg = [0] * 8
-        self.PC = 0
+        self.pc = 0
 
         # Instructions
         self.LDI_code = 0b10000010
@@ -77,10 +77,23 @@ class CPU:
     def run(self):
         """Run the CPU."""
         # Instruction register
-        IR = self.ram[0] # Get the first instruction loaded in from the program.
-        while IR is not self.HLT_code: # While the instruction is not equal to HLT : 1
+        running = True
+        while running:
+            IR = self.ram[self.pc]
             if IR == self.LDI_code:
-                self.ram_write()
+                print('LDI CODE')
+                # Load immediate call. Set this data directly into a register for usage.
+                register = self.ram[self.pc + 1]
+                data = self.ram[self.pc + 2]
+                self.reg[register] = data
+                self.pc += 3
+
             elif IR == self.PRN_code:
-                pass
+                print('PRN CODE')
+                # Print code, get the data out of the register given in the next instruction and print it.
+                print(self.reg[self.ram[self.pc + 1]])
+                self.pc += 2
+            elif IR == self.HLT_code:
+                print('HLT CODE')
+                running = False
 
