@@ -66,6 +66,7 @@ class CPU:
             self.reg[reg_a] += self.reg[reg_b]
         elif op == "MUL":
             self.reg[reg_a] *= self.reg[reg_b]
+
         #elif op == "SUB": etc
         else:
             raise Exception("Unsupported ALU operation")
@@ -121,10 +122,15 @@ class CPU:
                 print('HLT CODE')
                 running = False
 
-            '''
             elif IR == self.MUL_code:
+                print('MUL CODE')
+                regA = self.ram[self.pc + 1]
+                regB = self.ram[self.pc + 2]
+                self.alu('MUL', regA, regB)
                 
+                self.pc += 3
 
+            '''
             elif IR = self.CALL_code:
                 
 
