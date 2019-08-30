@@ -15,27 +15,48 @@ class CPU:
         self.LDI_code = 0b10000010
         self.PRN_code = 0b01000111
         self.HLT_code = 0b00000001
+        self.MUL_code = 0b10100010
+        self.CALL_code = 0b01010000
+        self.RET_code = 0b00010001
 
-    def load(self):
+    def load(self, filename=None):
         """Load a program into memory."""
 
         address = 0
 
         # For now, we've just hardcoded a program:
+        if filename is not None:
+            try:
+                with open(filename) as file:
+                    for line in file:
+                        comment_split = line.split('#')
+                        possible_instruction = comment_split[0]
 
-        program = [
-            # From print8.ls8
-            0b10000010, # LDI R0,8      ## Load immediate: Register 0 = 8
-            0b00000000,
-            0b00001000,
-            0b01000111, # PRN R0        ## Print Register 0's value
-            0b00000000,
-            0b00000001, # HLT           ## Halt the program
-        ]
+                        if possible_instruction == '' or possible_instruction == '\n':
+                            continue
+                        instruction = int(possible_instruction, 2)
 
-        for instruction in program:
-            self.ram[address] = instruction
-            address += 1
+                        self.ram[address] = instruction
+                        address += 1
+                file.close()
+                #print(self.ram)
+            except IOError:
+                print('There is no file at that location.')
+                sys.exit(2)
+        else:
+            program = [
+                # From print8.ls8
+                0b10000010, # LDI R0,8      ## Load immediate: Register 0 = 8
+                0b00000000,
+                0b00001000,
+                0b01000111, # PRN R0        ## Print Register 0's value
+                0b00000000,
+                0b00000001, # HLT           ## Halt the program
+            ]
+
+            for instruction in program:
+                self.ram[address] = instruction
+                address += 1
 
 
     def alu(self, op, reg_a, reg_b):
@@ -43,6 +64,8 @@ class CPU:
 
         if op == "ADD":
             self.reg[reg_a] += self.reg[reg_b]
+        elif op == "MUL":
+            self.reg[reg_a] *= self.reg[reg_b]
         #elif op == "SUB": etc
         else:
             raise Exception("Unsupported ALU operation")
@@ -93,7 +116,19 @@ class CPU:
                 # Print code, get the data out of the register given in the next instruction and print it.
                 print(self.reg[self.ram[self.pc + 1]])
                 self.pc += 2
+            
             elif IR == self.HLT_code:
                 print('HLT CODE')
                 running = False
+
+            '''
+            elif IR == self.MUL_code:
+                
+
+            elif IR = self.CALL_code:
+                
+
+            elif IR = self.RET_code:
+            '''
+            
 
